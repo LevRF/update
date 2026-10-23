@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .update.json
 .update-*
+# ключи подписи никогда не должны попасть в репозиторий
+*.xml
+*.pem
+*.key
+*.pfx
+*.sig

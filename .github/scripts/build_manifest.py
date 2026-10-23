@@ -3,6 +3,7 @@
 
 Тег релиза: <project>-v<version>, например genom-v1.2.0 или genom-db-v2024.10.1.
 Для каждого проекта в манифест попадает только последняя (не draft, не prerelease) версия.
+Подпись файла X берётся из файла X.sig того же релиза; без подписи клиенты файл не установят.
 
 Запуск: GITHUB_TOKEN=... GITHUB_REPOSITORY=owner/repo python build_manifest.py manifest.json
 """
@@ -46,12 +47,24 @@ def list_releases(repo, token):
         page += 1
 
 
-def sha256_of(url, token):
+def download(url):
+    # Репозиторий публичный: качаем без токена, иначе он уйдёт в редирект на хранилище файлов
+    req = urllib.request.Request(url, headers={"User-Agent": "updates-manifest"})
+    return urllib.request.urlopen(req, timeout=60)
+
+
+def sha256_of(url):
     h = hashlib.sha256()
-    with request(url, token, accept="application/octet-stream") as r:
+    with download(url) as r:
         for chunk in iter(lambda: r.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def read_signature(url):
+    with download(url) as r:
+        data = r.read(4096)
+    return data.decode("ascii").strip()
 
 
 def main():
@@ -84,15 +97,24 @@ def main():
     projects = {}
     for project, item in sorted(latest.items()):
         rel = item["release"]
+        sigs = {a["name"][:-4]: a for a in rel["assets"] if a["name"].endswith(".sig")}
         assets = []
         for a in sorted(rel["assets"], key=lambda a: a["name"]):
+            if a["name"].endswith(".sig"):
+                continue
             url, size = a["browser_download_url"], a["size"]
             digest = a.get("digest") or ""
             if digest.startswith("sha256:"):
                 sha = digest.split(":", 1)[1]
             else:
-                sha = known.get((url, size)) or sha256_of(a["url"], token)
-            assets.append({"name": a["name"], "url": url, "size": size, "sha256": sha})
+                sha = known.get((url, size)) or sha256_of(url)
+            sig = sigs.get(a["name"])
+            if sig is None:
+                print(f"warning: {rel['tag_name']}/{a['name']} без подписи — клиенты его не установят")
+            assets.append({
+                "name": a["name"], "url": url, "size": size, "sha256": sha,
+                "signature": read_signature(sig["browser_download_url"]) if sig else None,
+            })
         projects[project] = {
             "version": item["version"],
             "tag": rel["tag_name"],
