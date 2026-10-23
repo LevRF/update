@@ -1,0 +1,39 @@
+name: Update manifest
+
+on:
+  release:
+    types: [published, edited, deleted, unpublished, released, prereleased]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manifest
+  cancel-in-progress: false
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      # На событии release по умолчанию чекаутится тег, а манифест должен жить в основной ветке
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Build manifest.json
+        run: python3 .github/scripts/build_manifest.py manifest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- manifest.json; then
+            echo "manifest.json не изменился"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "Update manifest"
+          git push
