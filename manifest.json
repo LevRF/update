@@ -1,5 +1,21 @@
 {
   "schema": 1,
-  "repo": "",
-  "projects": {}
+  "repo": "LevRF/update",
+  "projects": {
+    "mt25": {
+      "version": "1.1.0",
+      "tag": "mt25-v1.1.0",
+      "published": "2026-10-30T09:51:40Z",
+      "notes": "https://github.com/LevRF/update/releases/tag/mt25-v1.1.0",
+      "assets": [
+        {
+          "name": "MT25.exe",
+          "url": "https://github.com/LevRF/update/releases/download/mt25-v1.1.0/MT25.exe",
+          "size": 14080512,
+          "sha256": "5045230fe563d4f586beb41d46132e96d9d9f2dca2c3a5a2ceab1659b935a7e8",
+          "signature": "QBvB/kcPKU91ZMGsauCBp4klTXSTm7FKTkcUL4/rXNu8aaJ9ky3OIRP7VJiGT+eo8OR4SC1DvZ7D2y3lbR2twTRJVL1Yw/gxBRWLwGRNi6Vq3BQCv5vaEKaWWllQ/t0nBqe7JUe4uKzdy/1kT/DkH25CFavdoWiQXqCIfkL/GkjRB8uw5lR6KkxmaXDdD0hoPRYGH0KbxfCQ4qk4kUIpAH8B1pJpyfazfK3Q8iNg+Bb3YDZbItk8Aca66GNS4/MER7XlXL0y9gEzQbsZEr3uOwq7u6ymnDZ9sl4u/xRMVVUDuqq7tiwb7fWT9kdMm+uQfUtYL7DJBABA3aTbqcyrfeFEmN0JlttfK+akC9IMKKH4cwzlTv1GhWFBISqfSx2fIp6uPoBhOcMwppiRCYGLaeCMZku84mX1DIKk6Z3ryujhdiW3mJfTLElsuZ2W4wcdsAXCfS0vdlVaCqJC93a91te9CiutdtUSLFJ2WBAXTJ/Q2wcMCiOr03Y7LUc123Sr"
+        }
+      ]
+    }
+  }
 }
